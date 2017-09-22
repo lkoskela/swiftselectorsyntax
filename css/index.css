@@ -27,9 +27,6 @@ h2 {
   margin-bottom: 1.5em;
 }
 
-.intro {
-}
-
 .func {
   color: #ed82d6;
 }
@@ -44,10 +41,6 @@ h2 {
 
 .type {
   color: #a682ec;
-}
-
-.disclaimer {
-  line-height: 2em;
 }
 
 pre, .code {
@@ -65,13 +58,6 @@ pre {
 
 .code {
   display: inline;
-}
-
-footer {
-  font-size: 12px;
-  margin-top: 200px;
-  opacity: 0.4;
-  text-align: right;
 }
 
 a {
