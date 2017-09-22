@@ -1,0 +1,224 @@
+
+<html>
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-105297900-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments)};
+    gtag('js', new Date());
+    gtag('config', 'UA-105297900-1');
+  </script>
+  <title>Closures in Swift</title>
+  <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Fira+Mono' rel='stylesheet' type='text/css'>
+  <link href="css/index.css" rel="stylesheet" />
+  <link href="css/index.print.css" media="print" rel="stylesheet" />
+  <link href="prism/prism-twilight.css" rel="stylesheet" />
+</head>
+
+<body>
+  <a href="https://github.com/lkoskela/swiftselectorsyntax"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
+  <h1>Swift selector syntax</h1>
+
+  <div class="intro">
+    <div>
+      <code class="hero"><span class="func">#selector</span>(<span class="name">method name</span>)</code>
+    </div>
+    <p>
+      Selectors in Swift are similar to selectors in Objective-C. A selector is used to refer to a method or a variable's getter or setter that is available in the Objective-C runtime.
+    </p>
+    <p>
+      The value of a selector expression is an instance of the <span class="type">Selector</span>
+      type that can be passed to functions expecting a <span class="type">Selector</span> such as
+      <span class="code">perform(<span class="member">&lt;selector&gt;</span>, with:<span class="func">self</span>, afterDelay:<span class="literal">0.5</span>)</span>.
+    </p>
+  </div>
+
+  <div>
+    <h2><a name="referencing-a-method-on-a-class">Referencing a method on a class:</a></h2>
+
+    <p>
+      Consider the following class and its methods:
+    </p>
+    <pre>
+      <code class="language-swift">
+        class Speaker: NSObject {
+
+            @objc
+            func apologize() {
+                print("I'm sorry")
+            }
+            
+            @objc
+            func shout(message: String) {
+                print("\(message.uppercased())!")
+            }
+            
+            @objc
+            func scream(_ message: String) {
+                print("\(message.uppercased().characters.map { "\($0) " }.joined() )!")
+            }
+
+            @objc
+            func say(date: Date) {
+                print(DateFormatter.localizedString(from: date, dateStyle: .long, timeStyle: .none))
+            }
+            
+            @objc
+            func say(text string: String) {
+                print("\(string)")
+            }
+        }
+      </code>
+    </pre>
+
+    <p>
+      In the simplest case, when there's no method overloading happening,
+      referencing a method on a class works by simply naming the class and
+      the method using dot syntax, like so:
+    </p>
+
+    <pre>
+      <code class="language-swift">
+        Speaker().perform(#selector(Speaker.apologize))
+        Speaker().perform(#selector(Speaker.shout), with: "Hello")
+        Speaker().perform(#selector(Speaker.scream), with: "Hello")
+      </code>
+    </pre>
+
+    <p>
+      When there is only a single method with the same name
+      (like <code class="language-swift">apologize()</code> or 
+      <code class="language-swift">shout(message:)</code>), you
+      can leave out the parentheses like we've done above.
+    </p>
+
+    <p>
+      However, when there is ambiguity caused by method overloading like in
+      the case of the two variants of <code class="language-swift">say(_:)</code>,
+      the signature needs to be more explicit:
+    </p>
+
+    <pre><code class="language-swift">
+      Speaker().perform(#selector(Speaker.say(text:)))
+      Speaker().perform(#selector(Speaker.say(date:)))
+    </code></pre>
+  </div>
+
+  <div>
+    <h2><a name="referencing-a-static-or-class-method-on-a-class">Referencing a static or class method on a class:</a></h2>
+    <p>
+      Referencing a static or class method works exactly like instance methods.
+      The only difference is that the target object is the class, not an
+      instance of the class, as illustrated below:
+    </p>
+    <pre>
+      <code class="language-swift">
+        class Speaker: NSObject {
+            @objc
+            static func apologize() {
+                print("We are sorry")
+            }
+
+            @objc
+            class func apologizeHard() {
+                print("We are very sorry")
+            }
+        }
+
+        Speaker.perform(#selector(StaticSpeaker.apologize))
+        Speaker.perform(#selector(StaticSpeaker.apologizeHard))
+      </code>
+    </pre>
+  </div>
+
+  <div>
+    <h2><a name="referencing-a-getter-or-setter-of-a-property">Referencing a getter or setter of a property:</a></h2>
+    <p>
+      Referencing a property to either get its value or set its value using a
+      <span class="type">Selector</span> works through the <code>getter:</code>
+      and <code>setter:</code> prefixes in front of the property's name.
+    </p>
+    <p>
+      Consider this <span class="type">Person</span> class and its <span class="member">name</span> property:
+    </p>
+    <pre>
+      <code class="language-swift">
+        class Person: NSObject {
+            @objc var name: String = ""
+            
+            init(_ name: String) {
+                self.name = name
+                super.init()
+            }
+        }
+      </code>
+    </pre>
+    <p>
+      We can reference the setter method the Objective-C runtime generates for the
+      <span class="member">name</span> property with
+      <code language="language-swift">#selector(setter: Person.name)</code> and
+      the equivalent getter method with
+      <code language="language-swift">#selector(getter: Person.name)</code>, as
+      illustrated below:
+    </p>
+    <pre>
+      <code class="language-swift">
+        let person = Person("Bob")
+        print(person.perform(#selector(getter: Person.name)).takeUnretainedValue())
+        // => "Bob"
+
+        person.perform(#selector(setter: Person.name), with: "Alice")
+        print(person.name)
+        // => "Alice"
+      </code>
+    </pre>
+  </div>
+
+  <div>
+    <h2><a name="using-a-keypath-selector-instead-of-a-literal-keypath-string">Using a <code>#keyPath</code> selector instead of a literal keypath string:</a></h2>
+    <p>
+      Referencing a property to either get its value or set its value using a
+      <span class="type">Selector</span> works through the <code>getter:</code>
+      and <code>setter:</code> prefixes in front of the property's name.
+    </p>
+    <p>Consider this <span class="type">Person</span> class and its <span class="member">name</span> property:</p>
+    <pre>
+      <code class="language-swift">
+        class Person: NSObject {
+            @objc var name: String = ""
+            
+            init(_ name: String) {
+                self.name = name
+                super.init()
+            }
+        }
+      </code>
+    </pre>
+    <p>
+      We can reference the setter method the Objective-C runtime generates for the
+      <span class="member">name</span> property with
+      <code language="language-swift">#selector(setter: Person.name)</code> and
+      the equivalent getter method with
+      <code language="language-swift">#selector(getter: Person.name)</code>, as
+      illustrated below:
+    </p>
+    <pre>
+      <code class="language-swift">
+        let person = Person("Bob")
+        print(person.perform(#selector(getter: Person.name)).takeUnretainedValue())
+        // => "Bob"
+
+        person.perform(#selector(setter: Person.name), with: "Alice")
+        print(person.name)
+        // => "Alice"
+      </code>
+    </pre>
+  </div>
+
+
+  <footer>by <a href="http://github.com/lkoskela">Lasse Koskela</a>.</footer>
+  <script src="prism/prism.js"></script>
+</body>
+</html>

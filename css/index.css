@@ -1,0 +1,104 @@
+body {
+  background-color: #222222;
+  color: #ddddff;
+  font-family: 'San Francisco', 'Roboto', sans-serif;
+  font-size: 24px;
+  padding: 40px;
+  padding-bottom: 0;
+}
+
+strong {
+  color: #cc7777;
+}
+
+h1 {
+  font-size: 56px;
+  margin-bottom: 1.5em;
+}
+
+h2 {
+  font-weight: normal;
+  margin-top: 120px;
+  margin-bottom: 60px;
+}
+
+.hero {
+  font-size: 40px;
+  margin-bottom: 1.5em;
+}
+
+.intro {
+}
+
+.func {
+  color: #ed82d6;
+}
+
+.member {
+  color: #6d9aa2;
+}
+
+.name, .literal {
+  color: #da5a48;
+}
+
+.type {
+  color: #a682ec;
+}
+
+.disclaimer {
+  line-height: 2em;
+}
+
+pre, .code {
+  font-family: 'Fira Mono', 'Source Code Pro', 'Inconsolata', 'Monaco', 'Menlo', 'Courier New';
+  color:#ddddcc;
+}
+
+pre {
+  display: block;
+  font-size: 25px;
+  margin-bottom: 5em;
+  margin-left: 40px;
+  margin-top: 3em;
+}
+
+.code {
+  display: inline;
+}
+
+footer {
+  font-size: 12px;
+  margin-top: 200px;
+  opacity: 0.4;
+  text-align: right;
+}
+
+a {
+  color: #0088D9;
+  text-decoration: none;
+}
+
+.toc {
+  min-width: 500px;
+}
+
+.toc li {
+  list-style-position: inside;
+}
+
+p {
+  margin-top: 4px;
+  margin-bottom: 14px;
+}
+
+h2, p, .toc {
+  max-width: 800px;
+  margin-right: auto;
+  text-align: left;
+}
+
+pre {
+  min-width: 800px !important;
+  max-width: 90%;
+}
